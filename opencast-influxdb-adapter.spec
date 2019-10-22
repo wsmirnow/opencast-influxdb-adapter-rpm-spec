@@ -10,6 +10,7 @@ Release:   1.%{shortcommit}%{?dist}
 License:   ECL 2.0
 URL:       https://github.com/opencast/opencast-influxdb-adapter
 Source0:   https://github.com/opencast/opencast-influxdb-adapter/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
+Source1:   opencast-influxdb-adapter.logrotate
 BuildArch: noarch
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
 
@@ -48,13 +49,21 @@ install -p -m 644 build/%{name}-2.0.jar %{buildroot}%{_datadir}/%{name}
 install -p -m 644 docs/%{name}-logback.xml %{buildroot}%{_sysconfdir}/%{name}
 install -p -m 644 docs/%{name}.properties %{buildroot}%{_sysconfdir}/%{name}
 install -p -m 644 docs/%{name}.service %{buildroot}%{_unitdir}
+install -p -D -m 644 %{SOURCE1} %{buildroot}%{_sysconfdir}/logrotate.d/%{name}
 
 # patch log file location
 sed -i 's#/var/log/opencast/influxdb-adapter\.log#%{_localstatedir}/log/%{name}/%{name}.log#' \
   %{buildroot}%{_sysconfdir}/%{name}/%{name}-logback.xml
+
 # patch systemd service file
 sed -i 's#/opt/opencast-influxdb-adapter#%{_datadir}/%{name}#' \
   %{buildroot}%{_unitdir}/%{name}.service
+sed -i 's#%{name}-2\.0\.jar$#%{name}-2.0.jar --config-file=%{_sysconfdir}/%{name}/%{name}.properties#' \
+  %{buildroot}%{_unitdir}/%{name}.service
+
+# patch logrotate
+sed -i 's#/var/log/%{name}#%{_localstatedir}/log/%{name}#' \
+  %{buildroot}%{_sysconfdir}/logrotate.d/%{name}
 
 
 %post
@@ -79,6 +88,7 @@ rm -rf $RPM_BUILD_ROOT
 %{_unitdir}/%{name}.service
 %config(noreplace) %{_sysconfdir}/%{name}/%{name}-logback.xml
 %config(noreplace) %{_sysconfdir}/%{name}/%{name}.properties
+%config(noreplace) %{_sysconfdir}/logrotate.d/%{name}
 %license LICENSE
 %doc NOTICES
 %doc README.md
