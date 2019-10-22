@@ -52,6 +52,10 @@ install -p -m 644 docs/%{name}.properties %{buildroot}%{_sysconfdir}/%{name}
 install -p -m 644 docs/%{name}.service %{buildroot}%{_unitdir}
 install -p -m 644 -D %{SOURCE1} %{buildroot}%{_sysconfdir}/logrotate.d/%{name}
 
+# patch log file configuration
+sed -i 's#adapter\.log-configuration-file=.+$#adapter.log-configuration-file=%{_sysconfdir}/%{name}/%{name}-logback.xml#' \
+  %{buildroot}%{_sysconfdir}/%{name}/%{name}.properties
+
 # patch log file location
 sed -i 's#/var/log/opencast/influxdb-adapter\.log#%{_localstatedir}/log/%{name}/%{name}.log#' \
   %{buildroot}%{_sysconfdir}/%{name}/%{name}-logback.xml
