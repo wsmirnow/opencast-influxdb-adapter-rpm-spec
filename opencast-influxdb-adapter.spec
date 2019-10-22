@@ -3,26 +3,23 @@
 %global commit 8208661fe01713db6043847953d69d7e35d770ee
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 
-Name:      opencast-influxdb-adapter
-Summary:   Stores statistical data, parsed from webserver logs, in InfluxDB
-Version:   0
-Release:   1.%{shortcommit}%{?dist}
-License:   ECL 2.0
-URL:       https://github.com/opencast/opencast-influxdb-adapter
-Source0:   https://github.com/opencast/opencast-influxdb-adapter/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
-Source1:   opencast-influxdb-adapter.logrotate
-BuildArch: noarch
-BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
+Name:       opencast-influxdb-adapter
+Summary:    Stores statistical data, parsed from webserver logs, in InfluxDB
+Version:    0
+Release:    1.%{shortcommit}%{?dist}
+License:    ECL 2.0
+URL:        https://github.com/opencast/opencast-influxdb-adapter
+Source0:    https://github.com/opencast/opencast-influxdb-adapter/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
+Source1:    opencast-influxdb-adapter.logrotate
+BuildArch:  noarch
+BuildRoot:  %{_tmppath}/%{name}-%{version}-%{release}-root
 
 
 %{?systemd_requires}
-BuildRequires:     systemd
-Requires(post):    systemd
-Requires(preun):   systemd
-Requires(postun):  systemd
-BuildRequires: java-devel >= 1:1.8.0
-BuildRequires: maven >= 3.1
-Requires: java >= 1:1.8.0
+BuildRequires:  systemd
+BuildRequires:  java-devel >= 1:1.8.0
+BuildRequires:  maven >= 3.1
+Requires:       java >= 1:1.8.0
 
 
 %description
@@ -49,7 +46,7 @@ install -p -m 644 build/%{name}-2.0.jar %{buildroot}%{_datadir}/%{name}
 install -p -m 644 docs/%{name}-logback.xml %{buildroot}%{_sysconfdir}/%{name}
 install -p -m 644 docs/%{name}.properties %{buildroot}%{_sysconfdir}/%{name}
 install -p -m 644 docs/%{name}.service %{buildroot}%{_unitdir}
-install -p -D -m 644 %{SOURCE1} %{buildroot}%{_sysconfdir}/logrotate.d/%{name}
+install -p -m 644 -D %{SOURCE1} %{buildroot}%{_sysconfdir}/logrotate.d/%{name}
 
 # patch log file location
 sed -i 's#/var/log/opencast/influxdb-adapter\.log#%{_localstatedir}/log/%{name}/%{name}.log#' \
