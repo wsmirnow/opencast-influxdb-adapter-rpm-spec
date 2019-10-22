@@ -7,7 +7,7 @@ Name:      opencast-influxdb-adapter
 Summary:   Stores statistical data, parsed from webserver logs, in InfluxDB
 Version:   0
 Release:   1.%{shortcommit}%{?dist}
-License:   ECLv2
+License:   ECL 2.0
 URL:       https://github.com/opencast/opencast-influxdb-adapter
 Source0:   https://github.com/opencast/opencast-influxdb-adapter/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 BuildArch: noarch
@@ -41,19 +41,29 @@ mvn clean install -D skipTests
 rm -rf $RPM_BUILD_ROOT
 install -m 755 -d \
   %{buildroot}%{_sysconfdir}/%{name} \
-  %{buildroot}%{_datadir} \
-  %{buildroot}%{_unitdir}
-install -p -m 755 %{name}-2.0.jar %{buildroot}%{_datadir}
+  %{buildroot}%{_datadir}/%{name} \
+  %{buildroot}%{_unitdir} \
+  %{buildroot}%{_localstatedir}/log/%{name}
+install -p -m 644 build/%{name}-2.0.jar %{buildroot}%{_datadir}/%{name}
 install -p -m 644 docs/%{name}-logback.xml %{buildroot}%{_sysconfdir}/%{name}
 install -p -m 644 docs/%{name}.properties %{buildroot}%{_sysconfdir}/%{name}
-install -p -m 644 %{name}.service %{buildroot}%{_unitdir}
+install -p -m 644 docs/%{name}.service %{buildroot}%{_unitdir}
+
+# patch log file location
+sed -i 's#/var/log/opencast/influxdb-adapter\.log#%{_localstatedir}/log/%{name}/%{name}.log#' \
+  %{buildroot}%{_sysconfdir}/%{name}/%{name}-logback.xml
+# patch systemd service file
+sed -i 's#/opt/opencast-influxdb-adapter#%{_datadir}/%{name}#' \
+  %{buildroot}%{_unitdir}/%{name}.service
 
 
 %post
 %systemd_post %{name}.service
 
+
 %preun
 %systemd_preun %{name}.service
+
 
 %postun
 %systemd_postun %{name}.service
@@ -62,11 +72,18 @@ install -p -m 644 %{name}.service %{buildroot}%{_unitdir}
 %clean
 rm -rf $RPM_BUILD_ROOT
 
+
 %files
 %defattr(-,root,root,-)
+%{_datadir}/%{name}/%{name}-2.0.jar
 %{_unitdir}/%{name}.service
-%config(noreplace) %{_sysconfdir}/%{name} %{name}-logback.xml %{name}.properties
+%config(noreplace) %{_sysconfdir}/%{name}/%{name}-logback.xml
+%config(noreplace) %{_sysconfdir}/%{name}/%{name}.properties
+%license LICENSE
+%doc NOTICES
+%doc README.md
+
 
 %changelog
-* Mon Oct 22 2019 Waldemar Smirnow <waldemar.smirnow@gmail.com> - 0-1
+* Tue Oct 22 2019 Waldemar Smirnow <waldemar.smirnow@gmail.com> - 0-1
 - Initial build
