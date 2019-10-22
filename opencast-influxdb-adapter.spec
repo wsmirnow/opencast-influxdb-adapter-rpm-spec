@@ -2,6 +2,10 @@
 
 %global commit 8208661fe01713db6043847953d69d7e35d770ee
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
+%define  uid   opencast-influxdb-adapter
+%define  gid   opencast-influxdb-adapter
+%define  nuid  5793
+%define  ngid  5793
 
 Name:       opencast-influxdb-adapter
 Summary:    Stores statistical data, parsed from webserver logs, in InfluxDB
@@ -40,8 +44,7 @@ rm -rf $RPM_BUILD_ROOT
 install -m 755 -d \
   %{buildroot}%{_sysconfdir}/%{name} \
   %{buildroot}%{_datadir}/%{name} \
-  %{buildroot}%{_unitdir} \
-  %{buildroot}%{_localstatedir}/log/%{name}
+  %{buildroot}%{_unitdir}
 install -p -m 644 build/%{name}-2.0.jar %{buildroot}%{_datadir}/%{name}
 install -p -m 644 docs/%{name}-logback.xml %{buildroot}%{_sysconfdir}/%{name}
 install -p -m 644 docs/%{name}.properties %{buildroot}%{_sysconfdir}/%{name}
@@ -57,10 +60,31 @@ sed -i 's#/opt/opencast-influxdb-adapter#%{_datadir}/%{name}#' \
   %{buildroot}%{_unitdir}/%{name}.service
 sed -i 's#%{name}-2\.0\.jar$#%{name}-2.0.jar --config-file=%{_sysconfdir}/%{name}/%{name}.properties#' \
   %{buildroot}%{_unitdir}/%{name}.service
+sed -i '/^\[Service\]$/a\User=%{uid}\nGroup=%{gid}' \
+  %{buildroot}%{_unitdir}/%{name}.service
 
 # patch logrotate
 sed -i 's#/var/log/%{name}#%{_localstatedir}/log/%{name}#' \
   %{buildroot}%{_sysconfdir}/logrotate.d/%{name}
+
+
+%pre
+# Create user and group if nonexistent
+# Try using a common numeric uid/gid if possible
+if [ ! $(getent group %{gid}) ]; then
+   if [ ! $(getent group %{ngid}) ]; then
+      groupadd -r -g %{ngid} %{gid} > /dev/null 2>&1 || :
+   else
+      groupadd -r %{gid} > /dev/null 2>&1 || :
+   fi
+fi
+if [ ! $(getent passwd %{uid}) ]; then
+   if [ ! $(getent passwd %{nuid}) ]; then
+      useradd -M -r -u %{nuid} -g %{gid} %{uid} > /dev/null 2>&1 || :
+   else
+      useradd -M -r -g %{gid} %{uid} > /dev/null 2>&1 || :
+   fi
+fi
 
 
 %post
@@ -89,6 +113,7 @@ rm -rf $RPM_BUILD_ROOT
 %license LICENSE
 %doc NOTICES
 %doc README.md
+%attr(-,%{uid},%{gid}) %{_localstatedir}/log/%{name}
 
 
 %changelog
