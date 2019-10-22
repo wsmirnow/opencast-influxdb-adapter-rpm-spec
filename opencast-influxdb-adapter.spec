@@ -23,7 +23,7 @@ BuildRoot:  %{_tmppath}/%{name}-%{version}-%{release}-root
 BuildRequires:  systemd
 BuildRequires:  java-devel >= 1:1.8.0
 BuildRequires:  maven >= 3.1
-Requires:       java >= 1:1.8.0
+Requires:       java-headless >= 1:1.8.0
 
 
 %description
