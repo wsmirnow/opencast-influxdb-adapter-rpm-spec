@@ -10,7 +10,7 @@
 Name:       opencast-influxdb-adapter
 Summary:    Stores statistical data, parsed from webserver logs, in InfluxDB
 Version:    0
-Release:    1.%{shortcommit}%{?dist}
+Release:    2.%{shortcommit}%{?dist}
 License:    ECL 2.0
 URL:        https://github.com/opencast/opencast-influxdb-adapter
 Source0:    https://github.com/opencast/opencast-influxdb-adapter/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
@@ -36,7 +36,7 @@ enrich the data with series metadata from Opencast and write the data into an in
 
 
 %build
-mvn clean install -D skipTests
+mvn clean install
 
 
 %install
@@ -122,5 +122,8 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Tue Oct 22 2019 Waldemar Smirnow <waldemar.smirnow@gmail.com> - 0-2
+- Unit tests enabled
+
 * Tue Oct 22 2019 Waldemar Smirnow <waldemar.smirnow@gmail.com> - 0-1
 - Initial build
