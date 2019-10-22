@@ -44,7 +44,8 @@ rm -rf $RPM_BUILD_ROOT
 install -m 755 -d \
   %{buildroot}%{_sysconfdir}/%{name} \
   %{buildroot}%{_datadir}/%{name} \
-  %{buildroot}%{_unitdir}
+  %{buildroot}%{_unitdir} \
+  %{buildroot}%{_localstatedir}/log/%{name}
 install -p -m 644 build/%{name}-2.0.jar %{buildroot}%{_datadir}/%{name}
 install -p -m 644 docs/%{name}-logback.xml %{buildroot}%{_sysconfdir}/%{name}
 install -p -m 644 docs/%{name}.properties %{buildroot}%{_sysconfdir}/%{name}
