@@ -1,6 +1,6 @@
 # vim: et:ts=2:sw=2:sts=2
 
-%global commit 8208661fe01713db6043847953d69d7e35d770ee
+%global commit 64d5ae79e70165d969269c1a307e6734057adcfc
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %define  uid   opencast-influxdb-adapter
 %define  gid   opencast-influxdb-adapter
@@ -10,10 +10,10 @@
 Name:       opencast-influxdb-adapter
 Summary:    Stores statistical data, parsed from webserver logs, in InfluxDB
 Version:    0
-Release:    1.%{shortcommit}%{?dist}
+Release:    3.%{shortcommit}%{?dist}
 License:    ECL 2.0
 URL:        https://github.com/opencast/opencast-influxdb-adapter
-Source0:    https://github.com/opencast/opencast-influxdb-adapter/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
+Source0:    https://github.com/wsmirnow/opencast-influxdb-adapter/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 Source1:    opencast-influxdb-adapter.logrotate
 BuildArch:  noarch
 BuildRoot:  %{_tmppath}/%{name}-%{version}-%{release}-root
@@ -36,7 +36,7 @@ enrich the data with series metadata from Opencast and write the data into an in
 
 
 %build
-mvn clean install -D skipTests
+mvn clean install
 
 
 %install
@@ -122,5 +122,11 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Wed Oct 23 2019 Waldemar Smirnow <waldemar.smirnow@gmail.com> - 0-3
+- Version 0-3.64d5ae7
+
+* Tue Oct 22 2019 Waldemar Smirnow <waldemar.smirnow@gmail.com> - 0-2
+- Unit tests enabled
+
 * Tue Oct 22 2019 Waldemar Smirnow <waldemar.smirnow@gmail.com> - 0-1
 - Initial build
